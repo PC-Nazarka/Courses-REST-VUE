@@ -1,15 +1,15 @@
 <template>
   <div class="container col-6 my-5">
-    <h1>Сброс пароля</h1>
+    <h1>Сброс username</h1>
     <label for="exampleFormControlInput1" class="form-label">Email</label>
     <input
       type="email"
       class="form-control"
       id="exampleFormControlInput1"
-      v-model="this.email"
       placeholder="Введите email для отправки письма"
+      v-model="this.email"
     />
-    <button @click="this.resetPassword" class="mt-3 btn btn-success">Сбросить пароль</button>
+    <button @click="this.resetUsername" class="mt-3 btn btn-success">Сбросить username</button>
   </div>
 </template>
 
@@ -17,19 +17,19 @@
 import axios from "axios";
 
 export default {
-  name: "ResetPasswordPage",
+  name: "ResetUsernamePage",
   data() {
     return {
       email: "",
     };
   },
   methods: {
-    async resetPassword() {
+    async resetUsername() {
       try {
-        await axios.post(this.$store.state.url + "auth/users/reset_password/", {
+        await axios.post(this.$store.state.url + "auth/users/reset_username/", {
           email: this.email,
         });
-        alert("На указанную почту отправлено сообщение со сбросом пароля")
+        alert("На указанную почту отправлено сообщение со сбросом username")
       } catch (e) {
         let json = JSON.parse(e.request.response);
         let str = "";

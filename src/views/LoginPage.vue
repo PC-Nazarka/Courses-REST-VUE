@@ -1,16 +1,14 @@
 <template>
-  <div class="container col-6 my-5">
+  <div class="container col-8 my-5">
     <h1>Вход</h1>
     <div class="mb-3 row">
-      <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+      <label for="staticEmail" class="col-sm-2 col-form-label">Username</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" v-model="this.username" />
       </div>
     </div>
     <div class="mb-3 row">
-      <label for="inputPassword" class="col-sm-2 col-form-label"
-        >Password</label
-      >
+      <label for="inputPassword" class="col-sm-2 col-form-label">Пароль</label>
       <div class="col-sm-10">
         <input
           type="password"
@@ -28,7 +26,12 @@
       >
         Регистрация
       </button>
-      <router-link :to="{name: 'ResetPassword'}">Забыли пароль?</router-link>
+      <router-link class="pe-3" :to="{ name: 'ResetPassword' }"
+        >Забыли пароль?</router-link
+      >
+      <router-link :to="{ name: 'ResetUsername' }"
+        >Забыли username?</router-link
+      >
     </div>
   </div>
 </template>
@@ -37,13 +40,12 @@
 import axios from "axios";
 import router from "../router";
 
-
 export default {
   name: "LoginPage",
   data() {
     return {
-        username: "",
-        password: "",
+      username: "",
+      password: "",
     };
   },
   methods: {
@@ -60,18 +62,21 @@ export default {
         this.$store.commit("setAccess", response.data.access);
         this.$store.commit("setRefresh", response.data.refresh);
         this.$store.dispatch("setUser");
-        await router.push({'name': "Main"});
+        await router.push({ name: "Main" });
       } catch (e) {
-        alert("Ошибка логина");
+        let json = JSON.parse(e.request.response);
+        let str = "";
+        for (let [key, value] of Object.entries(json)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
       }
     },
   },
   async created() {
-    if (this.$store.state.access !== ""){
-        await router.push({'name': "Main"});
+    if (this.$store.state.access !== "") {
+      await router.push({ name: "Main" });
     }
-  }
+  },
 };
 </script>
-
-<style></style>

@@ -36,7 +36,6 @@ export default {
       try {
         let url = new URL(this.$store.state.url + "courses/");
         if (query) {
-          console.log(query);
           for (let [key, value] of Object.entries(query)) {
             if (value !== "") {
               url.searchParams.set(key, value);
@@ -44,7 +43,6 @@ export default {
           }
         }
         url.searchParams.set("page", this.page);
-        console.log(url);
         const response = await axios.get(url.href);
         this.courses =
           this.page === 1
