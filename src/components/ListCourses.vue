@@ -1,6 +1,5 @@
 <template>
   <div class="row">
-    <filter-panel @search="this.search" v-show="this.showFilter" />
     <course-item
       v-for="course in this.courses"
       :key="course.id"
@@ -13,13 +12,11 @@
 <script>
 import axios from "axios";
 import CourseItem from "./CourseItem.vue";
-import FilterPanel from "@/components/FilterPanel.vue";
 
 export default {
   name: "ListCourses",
   components: {
     "course-item": CourseItem,
-    "filter-panel": FilterPanel,
   },
   props: {
     showFilter: Boolean,
@@ -55,9 +52,6 @@ export default {
       } catch (e) {
         alert("Ошибка получения курсов");
       }
-    },
-    search(query) {
-      this.fetchCourses(query);
     },
   },
   mounted() {
