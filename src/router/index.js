@@ -1,20 +1,54 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import MainPage from "@/views/MainPage.vue"
+import LoginPage from "@/views/LoginPage.vue"
+import RegistrationPage from "@/views/RegistrationPage.vue"
+import AccountInfoPage from "@/views/AccountInfoPage.vue"
+import CoursePassagePage from "@/views/CoursePassagePage.vue"
+import ResetPasswordPage from "@/views/ResetPasswordPage.vue"
+import CreatedCoursesPage from "@/views/CreatedCoursesPage.vue"
+import CoursePage from "@/views/CoursePage.vue"
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/",
+    name: "Main",
+    component: MainPage,
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: "/login",
+    name: "Login",
+    component: LoginPage,
+  },
+  {
+    path: "/registration",
+    name: "Registration",
+    component: RegistrationPage,
+  },
+  {
+    path: "/user/:id/",
+    name: "AccountInfo",
+    component: AccountInfoPage,
+  },
+  {
+    path: "/user/:id/courses-pass/",
+    name: "CoursePassage",
+    component: CoursePassagePage,
+  },
+  {
+    path: "/reset-password/",
+    name: "ResetPassword",
+    component: ResetPasswordPage,
+  },
+  {
+    path: "/user/:id/created-courses/",
+    name: "CreatedCourses",
+    component: CreatedCoursesPage,
+  },
+  {
+    path: "/course/:id/",
+    name: "Course",
+    component: CoursePage,
+  },
 ]
 
 const router = createRouter({
