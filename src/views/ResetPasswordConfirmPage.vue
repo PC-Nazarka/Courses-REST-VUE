@@ -59,9 +59,8 @@ export default {
         alert("Пароль успешно сменен");
         router.push({ name: "Main" });
       } catch (e) {
-        let json = JSON.parse(e.request.response);
         let str = "";
-        for (let [key, value] of Object.entries(json)) {
+        for (let [key, value] of Object.entries(e.response.data)) {
           str += `${key}: ${value}\n`;
         }
         alert(str);

@@ -26,7 +26,12 @@ export default {
         });
         this.isActivate = true;
       } catch (e) {
-        alert("Ошибка получения данных о другом юзере");
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
+        alert("Ошибка активации акканута");
       }
     },
   },

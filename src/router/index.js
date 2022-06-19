@@ -14,6 +14,8 @@ import ResetUsernameConfirmPage from "@/views/ResetUsernameConfirmPage.vue";
 import ChangeUsernamePage from "@/views/ChangeUsernamePage.vue";
 import ChangePasswordPage from "@/views/ChangePasswordPage.vue";
 import EditAccountPage from "@/views/EditAccountPage.vue";
+import AccountPage from "@/views/AccountPage.vue";
+import DeleteAccountPage from "@/views/DeleteAccountPage.vue";
 
 const routes = [
   {
@@ -33,9 +35,14 @@ const routes = [
   },
   {
     path: "/user/:id",
-    name: "AccountInfo",
-    component: AccountInfoPage,
+    name: "Account",
+    component: AccountPage,
     children: [
+      {
+        path: "",
+        name: "AccountInfo",
+        component: AccountInfoPage,
+      },
       {
         path: "courses-pass",
         name: "CoursePassage",
@@ -61,6 +68,11 @@ const routes = [
         name: "EditAccount",
         component: EditAccountPage,
       },
+      {
+        path: "delete-account",
+        name: "DeleteAccount",
+        component: DeleteAccountPage,
+      },
     ],
   },
   {
@@ -69,7 +81,7 @@ const routes = [
     component: ResetPasswordPage,
   },
   {
-    path: "/reset-password",
+    path: "/reset-username",
     name: "ResetUsername",
     component: ResetUsernamePage,
   },
