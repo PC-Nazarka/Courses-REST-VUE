@@ -1,30 +1,26 @@
 <template>
-  <div class="card m-3 col-3">
+  <div class="card p-1 m-2" style="width: 18rem">
     <img :src="this.course.image" class="p-3 card-img-top" />
     <div class="card-body">
       <h5 class="card-title">{{ course.name }}</h5>
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center flex-wrap">
         <i class="bi bi-star-fill">
-          <span class="ms-1">{{ course.rating }}</span>
+          {{ course.rating }}
         </i>
         <i class="bi bi-person-fill">
-          <span class="ms-1">
-            {{ course.students.length }}
-          </span>
+          {{ course.students.length }}
         </i>
         <i class="bi bi-cash">
-          <span class="ms-1">
-            {{ course.price }}
-          </span>
+          {{ course.price }}
         </i>
       </div>
-      <button
-        @click="$router.push({ name: 'Course', params: { id: course.id } })"
-        class="btn btn-success"
-      >
-        Check
-      </button>
     </div>
+    <button
+      @click="$router.push({ name: 'Course', params: { id: course.id } })"
+      class="btn btn-success"
+    >
+      Check
+    </button>
   </div>
 </template>
 

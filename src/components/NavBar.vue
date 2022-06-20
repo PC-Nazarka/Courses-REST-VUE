@@ -4,10 +4,21 @@
       <button class="btn navbar-brand" @click="$router.push({ name: 'Main' })">
         Courses
       </button>
-
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
       <div
-        class="collapse navbar-collapse d-flex justify-content-end"
+        class="collapse navbar-collapse"
         id="navbarSupportedContent"
+        :class="{ 'd-flex justify-content-end': this.width >= 992 }"
       >
         <ul class="navbar-nav mb-2 mx-3 mb-lg-0">
           <li class="nav-item dropdown">
@@ -22,64 +33,68 @@
               Аккаунт
             </a>
             <ul class="dropdown-menu me-5" aria-labelledby="navbarDropdown">
-              <li v-if="this.$store.state.access === ''">
-                <button
-                  class="dropdown-item"
-                  @click="$router.push({ name: 'Login' })"
-                >
-                  Вход
-                </button>
-              </li>
-              <li v-if="this.$store.state.access === ''">
-                <button
-                  class="dropdown-item"
-                  @click="$router.push({ name: 'Registration' })"
-                >
-                  Регистрация
-                </button>
-              </li>
-              <li v-if="this.$store.state.access !== ''">
-                <button
-                  class="dropdown-item"
-                  @click="
-                    $router.push({
-                      name: 'AccountInfo',
-                      params: { id: this.$store.state.user.id },
-                    })
-                  "
-                >
-                  {{ this.$store.state.user.username }}
-                </button>
-              </li>
-              <li v-if="this.$store.state.access !== ''">
-                <button
-                  class="dropdown-item"
-                  @click="
-                    $router.push({
-                      name: 'CoursePassage',
-                      params: { id: this.$store.state.user.id },
-                    })
-                  "
-                >
-                  Мое обучение
-                </button>
-              </li>
-              <li v-if="this.$store.state.access !== ''">
-                <button
-                  class="dropdown-item"
-                  @click="
-                    $router.push({
-                      name: 'CreatedCourses',
-                      params: { id: this.$store.state.user.id },
-                    })
-                  "
-                >
-                  Преподавание
-                </button>
-              </li>
-              <li v-if="this.$store.state.access !== ''">
-                <button class="dropdown-item" @click="this.exit">Выход</button>
-              </li>
+              <div v-if="this.$store.state.access === ''">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    @click="$router.push({ name: 'Login' })"
+                  >
+                    Вход
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    @click="$router.push({ name: 'Registration' })"
+                  >
+                    Регистрация
+                  </a>
+                </li>
+              </div>
+              <div v-else>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    @click="
+                      $router.push({
+                        name: 'Account',
+                        params: { id: this.$store.state.user.id },
+                      })
+                    "
+                  >
+                    {{ this.$store.state.user.username }}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    @click="
+                      $router.push({
+                        name: 'CoursePassage',
+                        params: { id: this.$store.state.user.id },
+                      })
+                    "
+                  >
+                    Мое обучение
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    @click="
+                      $router.push({
+                        name: 'CreatedCourses',
+                        params: { id: this.$store.state.user.id },
+                      })
+                    "
+                  >
+                    Преподавание
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" @click="this.exit">Выход</a>
+                </li>
+              </div>
             </ul>
           </li>
         </ul>
@@ -97,6 +112,7 @@ export default {
   data() {
     return {
       user: {},
+      width: 0,
     };
   },
   methods: {
@@ -125,6 +141,32 @@ export default {
         alert("Ошибка выхода");
       }
     },
+  },
+  watch: {
+    $route() {
+      this.$store.dispatch("setAccess");
+      this.$store.dispatch("setUser");
+    },
+  },
+  created() {
+    this.$store.dispatch("setAccess");
+    this.$store.dispatch("setUser");
+  },
+  beforeMount() {
+    this.$store.dispatch("setAccess");
+    this.$store.dispatch("setUser");
+  },
+  mounted() {
+    this.width = window.innerWidth;
+    window.addEventListener("resize", () => {
+      this.width = window.innerWidth;
+    });
+  },
+  updated() {
+    this.width = window.innerWidth;
+    window.addEventListener("resize", () => {
+      this.width = window.innerWidth;
+    });
   },
 };
 </script>

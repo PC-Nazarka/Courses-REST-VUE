@@ -27,6 +27,9 @@ export default createStore({
   actions: {
     async setUser({ commit, state }) {
       if (state.access === "") {
+        if (localStorage.access === "" && localStorage.refresh === "") {
+          return;
+        }
         commit("setRefresh", localStorage.refresh);
         commit("setAccess", localStorage.access);
       }
@@ -43,6 +46,9 @@ export default createStore({
     },
     async setAccess({ commit, state }) {
       if (state.access === "") {
+        if (localStorage.access === "" && localStorage.refresh === "") {
+          return;
+        }
         commit("setRefresh", localStorage.refresh);
         commit("setAccess", localStorage.access);
       }
@@ -63,7 +69,7 @@ export default createStore({
           } catch (e) {
             commit("setRefresh", "");
             commit("setAccess", "");
-            await router.push({name: "Main"});
+            await router.push({ name: "Main" });
           }
         }
       }

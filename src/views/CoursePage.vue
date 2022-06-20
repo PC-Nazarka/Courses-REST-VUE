@@ -4,7 +4,15 @@
 
 <script>
 export default {
+  name: "CoursePage",
+  methods: {
+    async getCourse(){
 
+    }
+  },
+  created(){
+    this.getCourse()
+  }
 }
 </script>
 

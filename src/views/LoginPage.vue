@@ -1,14 +1,16 @@
 <template>
-  <div class="container col-8 my-5">
+  <div class="container col-4 my-5">
     <h1>Вход</h1>
     <div class="mb-3 row">
-      <label for="staticEmail" class="col-sm-2 col-form-label">Username</label>
+      <label class="col-sm-2 col-form-label me-2">Username</label>
       <div class="col-sm-10">
         <input type="text" class="form-control" v-model="this.username" />
       </div>
     </div>
     <div class="mb-3 row">
-      <label for="inputPassword" class="col-sm-2 col-form-label">Пароль</label>
+      <label for="inputPassword" class="col-sm-2 col-form-label me-2"
+        >Пароль</label
+      >
       <div class="col-sm-10">
         <input
           type="password"
@@ -18,10 +20,13 @@
         />
       </div>
     </div>
-    <div class="buttons">
-      <button class="btn btn-success" @click="this.login">Войти</button>
+    <div class="btn-toolbar mb-3" role="toolbar">
+      <button class="btn btn-success me-2" type="button" @click="this.login">
+        Войти
+      </button>
       <button
-        class="btn btn-success mx-3"
+        class="btn btn-success me-2"
+        type="button"
         @click="$router.push({ name: 'Registration' })"
       >
         Регистрация
