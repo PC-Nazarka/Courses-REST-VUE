@@ -38,7 +38,11 @@ export default {
             this.page++;
           }
         } catch (e) {
-          alert("Ошибка получения курсов");
+          let str = "";
+          for (let [key, value] of Object.entries(e.response.data)) {
+            str += `${key}: ${value}\n`;
+          }
+          alert(str);
         }
       }
     },

@@ -9,6 +9,7 @@
           type="email"
           class="form-control"
           id="inputEmail"
+          placeholder="Введите email"
         />
       </div>
     </div>
@@ -22,6 +23,7 @@
           type="text"
           class="form-control"
           id="inputUsername"
+          placeholder="Введите username"
         />
       </div>
     </div>
@@ -33,6 +35,7 @@
           type="text"
           class="form-control"
           id="inputFirstName"
+          placeholder="Введите имя"
         />
       </div>
     </div>
@@ -46,6 +49,7 @@
           type="text"
           class="form-control"
           id="inputSecondName"
+          placeholder="Введите фамилия"
         />
       </div>
     </div>
@@ -70,6 +74,7 @@
           type="password"
           class="form-control"
           id="inputPassword"
+          placeholder="Введите пароль"
         />
       </div>
     </div>
@@ -83,6 +88,7 @@
           type="password"
           class="form-control"
           id="inputRepeatPassword"
+          placeholder="Повторите пароль"
         />
       </div>
     </div>

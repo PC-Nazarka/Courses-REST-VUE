@@ -122,6 +122,18 @@
                     Архив
                   </button>
                 </li>
+                                <li>
+                  <button
+                    class="link-dark btn btn-toggle"
+                    @click="
+                      this.nullingPage();
+                      this.is_teach_courses = true;
+                      this.fetchCourses('teaching');
+                    "
+                  >
+                    Преподавание
+                  </button>
+                </li>
               </ul>
             </div>
           </li>
@@ -129,16 +141,18 @@
       </div>
       <div class="pt-3">
         <account-info v-if="this.is_account" :user="this.user"></account-info>
+        <edit-account
+          :user="this.user"
+          v-else-if="this.is_edit_account && this.is_me"
+        ></edit-account>
         <change-username
           v-else-if="this.is_change_username && this.is_me"
         ></change-username>
         <change-password
           v-else-if="this.is_change_password && this.is_me"
         ></change-password>
-        <edit-account
-          v-else-if="this.is_edit_account && this.is_me"
-        ></edit-account>
         <delete-account
+          :user="this.user"
           v-else-if="this.is_delete_account && this.is_me"
         ></delete-account>
         <list-courses
@@ -146,7 +160,8 @@
             this.is_all_courses ||
             this.is_favorite_courses ||
             this.is_want_pass_courses ||
-            this.is_achive_courses
+            this.is_achive_courses ||
+            this.is_teach_courses
           "
           :courses="this.courses"
         ></list-courses>
@@ -158,11 +173,11 @@
 <script>
 import axios from "axios";
 import router from "../router";
-import AccountInfoPage from "@/views/AccountInfoPage.vue";
-import ChangeUsernamePage from "@/views/ChangeUsernamePage.vue";
-import ChangePasswordPage from "@/views/ChangePasswordPage.vue";
-import EditAccountPage from "@/views/EditAccountPage.vue";
-import DeleteAccountPage from "@/views/DeleteAccountPage.vue";
+import AccountInfoPage from "@/components/AccountInfo.vue";
+import ChangeUsernamePage from "@/components/ChangeUsername.vue";
+import ChangePasswordPage from "@/components/ChangePassword.vue";
+import EditAccountPage from "@/components/EditAccount.vue";
+import DeleteAccountPage from "@/components/DeleteAccount.vue";
 import ListCourses from "@/components/ListCourses.vue";
 export default {
   name: "AccountPage",
@@ -185,6 +200,7 @@ export default {
       is_change_password: false,
       is_edit_account: false,
       is_delete_account: false,
+      is_teach_courses: false,
       is_me: false,
       courses: [],
       user: Object(),
@@ -219,6 +235,9 @@ export default {
         case "archive":
           courses = this.user.archive_courses;
           break;
+        case "teaching":
+          courses = this.user.courses;
+          break;
       }
       try {
         await this.$store.dispatch("setAccess");
@@ -243,7 +262,6 @@ export default {
     },
     async getUser() {
       try {
-        await this.$store.dispatch("setAccess");
         const response = await axios.get(
           this.$store.state.url + `auth/users/${this.$route.params.id}/`,
           {
@@ -264,21 +282,14 @@ export default {
     },
     checkUser() {
       this.is_me =
-        Number(this.$route.params.id) === Number(this.$store.state.user.id);
-      if (!this.is_me) {
-        this.getUser();
-      } else {
-        this.user = this.$store.state.user;
-      }
+        Number(this.$route.params.id) === Number(this.$store.state.user_id);
+      this.getUser();
     },
   },
   created() {
     this.checkUser();
   },
   mounted() {
-    this.checkUser();
-  },
-  updated() {
     this.checkUser();
   },
 };

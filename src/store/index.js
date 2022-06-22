@@ -2,14 +2,12 @@ import { createStore } from "vuex";
 import axios from "axios";
 import router from "../router";
 
-export default createStore({
+const store = createStore({
   state: {
-    url: `${
-      process.env.NODE_ENV === "production" ? "warn" : "http://0.0.0.0:8000"
-    }/api/v1/`,
-    access: "",
-    refresh: "",
-    user: {},
+    url: "http://0.0.0.0:8000/api/v1/",
+    access: localStorage.access ? localStorage.access : "",
+    refresh: localStorage.refresh ? localStorage.refresh : "",
+    user_id: Number(localStorage.user_id) ? Number(localStorage.user_id) : -1,
   },
   mutations: {
     setAccess(state, access) {
@@ -20,18 +18,16 @@ export default createStore({
       state.refresh = refresh;
       localStorage.setItem("refresh", refresh);
     },
-    setUser(state, user) {
-      state.user = user;
+    setUserId(state, user_id) {
+      state.user_id = user_id;
+      localStorage.setItem("user_id", user_id);
     },
   },
   actions: {
     async setUser({ commit, state }) {
-      if (state.access === "") {
-        if (localStorage.access === "" && localStorage.refresh === "") {
-          return;
-        }
-        commit("setRefresh", localStorage.refresh);
-        commit("setAccess", localStorage.access);
+      if (state.access === "" && state.refresh === "") {
+        await router.push({ name: "Login" });
+        return;
       }
       try {
         const response = await axios.get(state.url + "auth/users/me/", {
@@ -39,23 +35,25 @@ export default createStore({
             Authorization: "JWT " + state.access,
           },
         });
-        commit("setUser", response.data);
+        commit("setUserId", response.data.id);
+        console.log(state.user_id);
       } catch (e) {
-        alert("Ошибка входа. Повторите попытку");
+        await router.push({ name: "Login" });
       }
     },
-    async setAccess({ commit, state }) {
-      if (state.access === "") {
-        if (localStorage.access === "" && localStorage.refresh === "") {
-          return;
-        }
-        commit("setRefresh", localStorage.refresh);
-        commit("setAccess", localStorage.access);
+    async setAccess({ commit, state, dispatch }) {
+      if (state.access === "" && state.refresh === "") {
+        await router.push({ name: "Login" });
+        return;
       }
+      console.log("setAccess");
       try {
         await axios.post(state.url + "auth/jwt/verify/", {
           token: state.access,
         });
+        console.log("After verify");
+        dispatch("setUser");
+        console.log("After dispatch");
       } catch (error) {
         if (error.response.status === 401) {
           try {
@@ -66,9 +64,11 @@ export default createStore({
               }
             );
             commit("setAccess", response_refresh.data.access);
+            dispatch("setAccess");
           } catch (e) {
             commit("setRefresh", "");
             commit("setAccess", "");
+            commit("setUserId", -1);
             await router.push({ name: "Main" });
           }
         }
@@ -76,3 +76,5 @@ export default createStore({
     },
   },
 });
+
+export default store;

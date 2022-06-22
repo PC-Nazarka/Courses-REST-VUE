@@ -24,35 +24,36 @@ export default {
     return {
       password: "",
       username: "",
+      currentUser: Object(),
     };
+  },
+  props: {
+    user: Object,
   },
   methods: {
     async deleteAccount(event) {
       event.preventDefault();
       try {
         await this.$store.dispatch("setAccess");
-        await axios.delete(
-          this.$store.state.url + `auth/users/me/`,
-          {
-            data: {
-              username: this.username,
-              password: this.password,
-              description: this.$store.state.user.description,
-              courses_student: this.$store.state.user.courses_student,
-              pass_courses: this.$store.state.user.pass_courses,
-              favorite_courses: this.$store.state.user.favorite_courses,
-              want_pass_courses: this.$store.state.user.want_pass_courses,
-              archive_courses: this.$store.state.user.archive_courses,
-              courses: this.$store.state.user.courses,
-            },
-            headers: {
-              Authorization: "JWT " + this.$store.state.access,
-            },
-          }
-        );
+        await axios.delete(this.$store.state.url + `auth/users/me/`, {
+          data: {
+            username: this.username,
+            password: this.password,
+            description: this.user.description,
+            courses_student: this.user.courses_student,
+            pass_courses: this.user.pass_courses,
+            favorite_courses: this.user.favorite_courses,
+            want_pass_courses: this.user.want_pass_courses,
+            archive_courses: this.user.archive_courses,
+            courses: this.user.courses,
+          },
+          headers: {
+            Authorization: "JWT " + this.$store.state.access,
+          },
+        });
         this.$store.commit("setAccess", "");
         this.$store.commit("setRefresh", "");
-        this.$store.commit("setUser", Object());
+        this.$store.commit("setUserId", -1);
         await router.push({ name: "Main" });
       } catch (e) {
         let str = "";
@@ -60,14 +61,8 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "AccountInfo" });
       }
     },
-  },
-  created() {
-    if (this.$store.state.access === "") {
-      router.push("/");
-    }
   },
 };
 </script>

@@ -48,6 +48,9 @@ export default {
       description: "",
     };
   },
+  props: {
+    user: Object,
+  },
   methods: {
     async editAccountInfo() {
       try {
@@ -76,9 +79,9 @@ export default {
     },
   },
   created() {
-    this.first_name = this.$store.state.user.first_name;
-    this.second_name = this.$store.state.user.last_name;
-    this.description = this.$store.state.user.description;
+    this.first_name = this.user.first_name;
+    this.second_name = this.user.last_name;
+    this.description = this.user.description;
   },
 };
 </script>

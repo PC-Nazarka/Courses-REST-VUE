@@ -69,6 +69,7 @@ export default {
         this.$store.dispatch("setUser");
         await router.push({ name: "Main" });
       } catch (e) {
+        console.log(e);
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
           str += `${key}: ${value}\n`;
@@ -76,11 +77,6 @@ export default {
         alert(str);
       }
     },
-  },
-  async created() {
-    if (this.$store.state.access !== "") {
-      await router.push({ name: "Main" });
-    }
   },
 };
 </script>

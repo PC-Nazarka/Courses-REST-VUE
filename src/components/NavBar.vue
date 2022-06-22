@@ -33,7 +33,9 @@
               Аккаунт
             </a>
             <ul class="dropdown-menu me-5" aria-labelledby="navbarDropdown">
-              <div v-if="this.$store.state.access === ''">
+              <div
+                v-if="[undefined, '', null].includes(this.$store.state.access)"
+              >
                 <li>
                   <a
                     class="dropdown-item"
@@ -58,37 +60,11 @@
                     @click="
                       $router.push({
                         name: 'Account',
-                        params: { id: this.$store.state.user.id },
+                        params: { id: this.$store.state.user_id },
                       })
                     "
                   >
-                    {{ this.$store.state.user.username }}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="dropdown-item"
-                    @click="
-                      $router.push({
-                        name: 'CoursePassage',
-                        params: { id: this.$store.state.user.id },
-                      })
-                    "
-                  >
-                    Мое обучение
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="dropdown-item"
-                    @click="
-                      $router.push({
-                        name: 'CreatedCourses',
-                        params: { id: this.$store.state.user.id },
-                      })
-                    "
-                  >
-                    Преподавание
+                    Профиль
                   </a>
                 </li>
                 <li>
@@ -133,28 +109,14 @@ export default {
         if (response.status === 204) {
           this.$store.commit("setAccess", "");
           this.$store.commit("setRefresh", "");
-          this.$store.commit("setUser", Object());
+          this.$store.commit("setUserId", -1);
           localStorage.clear();
           await router.push({ name: "Main" });
         }
       } catch (e) {
-        alert("Ошибка выхода");
+        await router.push({ name: "Main" });
       }
     },
-  },
-  watch: {
-    $route() {
-      this.$store.dispatch("setAccess");
-      this.$store.dispatch("setUser");
-    },
-  },
-  created() {
-    this.$store.dispatch("setAccess");
-    this.$store.dispatch("setUser");
-  },
-  beforeMount() {
-    this.$store.dispatch("setAccess");
-    this.$store.dispatch("setUser");
   },
   mounted() {
     this.width = window.innerWidth;
