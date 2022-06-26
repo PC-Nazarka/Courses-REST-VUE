@@ -36,7 +36,6 @@ const store = createStore({
           },
         });
         commit("setUserId", response.data.id);
-        console.log(state.user_id);
       } catch (e) {
         await router.push({ name: "Login" });
       }
@@ -46,14 +45,11 @@ const store = createStore({
         await router.push({ name: "Login" });
         return;
       }
-      console.log("setAccess");
       try {
         await axios.post(state.url + "auth/jwt/verify/", {
           token: state.access,
         });
-        console.log("After verify");
         dispatch("setUser");
-        console.log("After dispatch");
       } catch (error) {
         if (error.response.status === 401) {
           try {

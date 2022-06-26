@@ -9,6 +9,7 @@ import ResetUsernamePage from "@/views/ResetUsernamePage.vue";
 import ResetPasswordConfirmPage from "@/views/ResetPasswordConfirmPage.vue";
 import ResetUsernameConfirmPage from "@/views/ResetUsernameConfirmPage.vue";
 import AccountPage from "@/views/AccountPage.vue";
+import CourseCreatePage from "@/views/CourseCreatePage.vue";
 import store from "../store";
 import axios from "axios";
 
@@ -49,6 +50,16 @@ const routes = [
     component: CoursePage,
   },
   {
+    path: "/course-create",
+    name: "CourseCreate",
+    component: CourseCreatePage,
+  },
+  {
+    path: "/course-edit/:id",
+    name: "CourseEdit",
+    component: CourseCreatePage,
+  },
+  {
     path: "/activate/:uid/:token",
     name: "ActivateAccount",
     component: ActivateAccountPage,
@@ -78,29 +89,21 @@ function isClear(storeState) {
 }
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.name);
-  console.log(localStorage);
-  console.log(store.state);
-  console.log("Before reg");
   if (["Login", "Registration"].includes(to.name) && !isClear(store.state)) {
     conspole.log("In reg");
     next({ name: "Main" });
   }
-  console.log("After reg");
   if (
     ["Registration", "Login"].includes(to.name) ||
     (to.name === "Main" && isClear(store.state))
   ) {
-    console.log("In anonim");
     next();
   }
   try {
     await axios.post(store.state.url + "auth/jwt/verify/", {
       token: store.state.access,
     });
-    console.log("Verify");
   } catch (e) {
-    console.log("hi");
     store.dispatch("setAccess");
   }
   next();

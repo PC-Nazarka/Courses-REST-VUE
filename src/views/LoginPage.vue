@@ -54,8 +54,7 @@ export default {
     };
   },
   methods: {
-    async login(event) {
-      event.preventDefault();
+    async login() {
       try {
         const response = await axios.post(
           this.$store.state.url + "auth/jwt/create/",
@@ -69,7 +68,6 @@ export default {
         this.$store.dispatch("setUser");
         await router.push({ name: "Main" });
       } catch (e) {
-        console.log(e);
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
           str += `${key}: ${value}\n`;
@@ -77,6 +75,14 @@ export default {
         alert(str);
       }
     },
+    enterKey(e) {
+      if (e.key === "Enter") {
+        this.login();
+      }
+    },
+  },
+  mounted() {
+    window.addEventListener("keydown", this.enterKey);
   },
 };
 </script>

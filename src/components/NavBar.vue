@@ -114,6 +114,11 @@ export default {
           await router.push({ name: "Main" });
         }
       } catch (e) {
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
         await router.push({ name: "Main" });
       }
     },

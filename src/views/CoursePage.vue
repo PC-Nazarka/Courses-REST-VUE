@@ -7,12 +7,12 @@
       <div class="info col-8">
         <h5>{{ this.course.name }}</h5>
         <p>Цена: {{ this.course.price }}</p>
-        <p>Дата создания: {{ Date(this.course.created) }}</p>
+        <p>Дата создания: {{ this.course.created }}</p>
         <div class="d-flex">
           Рейтинг:
           <div class="px-2">
             <i
-              v-for="star of 5"
+              v-for="star of this.stars"
               :key="star"
               class="bi"
               :class="{
@@ -21,31 +21,15 @@
               }"
             ></i>
           </div>
-          {{ this.course.rating }}
+          {{ Number(this.course.rating.toFixed(1)) }}
         </div>
-        <!-- <div class="rating">
-          <input type="radio" name="rating" value="5" id="5" /><label for="5"
-            >☆</label
-          >
-          <input type="radio" name="rating" value="4" id="4" /><label for="4"
-            >☆</label
-          >
-          <input type="radio" name="rating" value="3" id="3" /><label for="3"
-            >☆</label
-          >
-          <input type="radio" name="rating" value="2" id="2" /><label for="2"
-            >☆</label
-          >
-          <input type="radio" name="rating" value="1" id="1" /><label for="1"
-            >☆</label
-          >
-        </div> -->
       </div>
     </div>
     <div class="py-2">
       <p>{{ this.course.description }}</p>
     </div>
-    <div class="py-2">
+    <div class="py-2" v-if="!this.topics.length">В курсе темы отсутствуют</div>
+    <div class="py-2" v-else>
       В курсе присутствуют следующие темы:
       <ul class="list-group">
         <li
@@ -58,6 +42,15 @@
       </ul>
     </div>
     <div class="d-flex pt-2">
+      <button
+        v-if="Number(this.$store.state.user_id) === Number(this.course.owner)"
+        class="btn btn-success me-2"
+        @click="
+          $router.push({ name: 'CourseEdit', params: { id: this.course.id } })
+        "
+      >
+        Редактировать
+      </button>
       <div
         v-if="!this.course.students.includes(Number(this.$store.state.user_id))"
       >
@@ -66,29 +59,229 @@
         </button>
       </div>
       <div v-else>
-        <button class="btn btn-success me-2">
+        <button @click="this.showModalReview" class="btn btn-success me-2">
           Написать отзыв
         </button>
         <button class="btn btn-success me-2">Продолжить обучение</button>
-        <button @click="this.buyCourse" class="btn btn-success me-2">Покинуть курс</button>
+        <button @click="this.buyCourse" class="btn btn-success me-2">
+          Покинуть курс
+        </button>
       </div>
     </div>
+    <div>
+      <div v-if="this.reviews.length">
+        <h2>Отзывы</h2>
+        <review-item
+          v-for="review in this.reviews"
+          :key="review.id"
+          :review="review"
+          @edit="this.editReview"
+          @remove="this.removeReview"
+        ></review-item>
+      </div>
+      <div v-else>
+        <h2>Отзывы отсутствуют</h2>
+      </div>
+    </div>
+    <modal-window
+      :show="this.isShowModal"
+      v-show="this.isShowModal"
+      @close="this.showModalReview"
+    >
+      <template #header> Написание отзыва </template>
+      <template #body>
+        <div>
+          <textarea class="w-100 form-control" v-model="this.review"></textarea>
+        </div>
+        <div class="d-flex">
+          <i
+            type="radio"
+            name="ranting"
+            class="bi bi-star"
+            @mouseover="this.selectStar"
+            v-for="star of this.stars"
+            :key="star"
+            :value="star"
+            :id="star"
+          ></i>
+        </div>
+      </template>
+      <template #footer>
+        <button class="btn btn-success" type="button" @click="this.sendReview">
+          Отправить
+        </button>
+      </template>
+    </modal-window>
+    <modal-window
+      :show="this.isShowModalEdit"
+      v-show="this.isShowModalEdit"
+      @close="this.isShowModalEdit = !this.isShowModalEdit"
+    >
+      <template #header> Редактирование отзыва </template>
+      <template #body>
+        <div>
+          <textarea
+            class="w-100 form-control"
+            v-model="this.reviewForEdit.review"
+          ></textarea>
+        </div>
+        <div class="d-flex">
+          <i
+            type="radio"
+            name="ranting"
+            class="bi"
+            :class="{
+              'bi-star': star > this.reviewForEdit.rating,
+              'bi-star-fill': star <= this.reviewForEdit.rating,
+            }"
+            @mouseover="this.selectStar"
+            v-for="star of this.stars"
+            :key="star"
+            :value="star"
+            :id="star"
+          ></i>
+        </div>
+      </template>
+      <template #footer>
+        <button
+          class="btn btn-success"
+          type="button"
+          @click="this.sendEditReview"
+        >
+          Отправить
+        </button>
+      </template>
+    </modal-window>
   </div>
 </template>
 
 <script>
+import ModalWindow from "@/components/ModalWindow.vue";
+import ReviewItem from "@/components/ReviewItem.vue";
 import axios from "axios";
 import router from "../router";
 
 export default {
   name: "CoursePage",
+  components: {
+    "modal-window": ModalWindow,
+    "review-item": ReviewItem,
+  },
   data() {
     return {
+      isShowModal: false,
+      isShowModalEdit: false,
       course: Object(),
       topics: [],
+      review: "",
+      rating: 0,
+      stars: [1, 2, 3, 4, 5],
+      reviews: [],
+      reviewForEdit: Object(),
     };
   },
   methods: {
+    async sendEditReview() {
+      try {
+        await this.$store.dispatch("setAccess");
+        let stars = document.querySelectorAll(
+          "i[name='ranting'].bi-star-fill"
+        ).length;
+        const response = await axios.put(
+          this.$store.state.url + `reviews/${this.reviewForEdit.id}/`,
+          {
+            rating: stars,
+            review: this.reviewForEdit.review,
+            course: this.$route.params.id,
+          },
+          {
+            headers: {
+              Authorization: "JWT " + this.$store.state.access,
+            },
+          }
+        );
+        this.isShowModalEdit = false;
+        this.reviews = [];
+        await this.getReviews();
+      } catch (e) {
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
+        await router.push({ name: "Main" });
+      }
+    },
+    async removeReview(review) {
+      try {
+        await this.$store.dispatch("setAccess");
+        const response = await axios.delete(
+          this.$store.state.url + `reviews/${review.id}/`,
+          {
+            headers: {
+              Authorization: "JWT " + this.$store.state.access,
+            },
+          }
+        );
+        location.reload();
+      } catch (e) {
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
+        await router.push({ name: "Main" });
+      }
+    },
+    editReview(review) {
+      this.reviewForEdit = review;
+      this.isShowModalEdit = true;
+    },
+    async sendReview() {
+      try {
+        await this.$store.dispatch("setAccess");
+        let stars = document.querySelectorAll(
+          "i[name='ranting'].bi-star-fill"
+        ).length;
+        const response = await axios.post(
+          this.$store.state.url + `reviews/`,
+          {
+            rating: stars,
+            review: this.review,
+            course: this.$route.params.id,
+          },
+          {
+            headers: {
+              Authorization: "JWT " + this.$store.state.access,
+            },
+          }
+        );
+        this.reviews = [];
+        await this.getReviews();
+      } catch (e) {
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
+        await router.push({ name: "Main" });
+      }
+    },
+    selectStar(e) {
+      let stars = document.querySelectorAll("i[name='ranting']");
+      for (let star of stars) {
+        if (Number(star.id) <= e.target.id) {
+          star.classList.remove("bi-star");
+          star.classList.add("bi-star-fill");
+        } else {
+          star.classList.remove("bi-star-fill");
+          star.classList.add("bi-star");
+        }
+      }
+    },
+    showModalReview() {
+      this.isShowModal = !this.isShowModal;
+    },
     async buyCourse() {
       try {
         await this.$store.dispatch("setAccess");
@@ -123,6 +316,7 @@ export default {
     },
     async getTopics() {
       try {
+        await this.$store.dispatch("setAccess");
         for (let i of this.course.topics) {
           const response = await axios.get(
             this.$store.state.url + `topics/${i}/`,
@@ -146,6 +340,7 @@ export default {
     },
     async getCourse() {
       try {
+        await this.$store.dispatch("setAccess");
         const response = await axios.get(
           this.$store.state.url + `courses/${this.$route.params.id}/`,
           {
@@ -156,6 +351,30 @@ export default {
         );
         this.course = response.data;
         await this.getTopics();
+        await this.getReviews();
+      } catch (e) {
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
+        await router.push({ name: "Main" });
+      }
+    },
+    async getReviews() {
+      try {
+        await this.$store.dispatch("setAccess");
+        for (let i of this.course.reviews) {
+          const review = await axios.get(
+            this.$store.state.url + `reviews/${i}/`,
+            {
+              headers: {
+                Authorization: "JWT " + this.$store.state.access,
+              },
+            }
+          );
+          this.reviews = [...this.reviews, review.data];
+        }
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
@@ -173,60 +392,37 @@ export default {
 </script>
 
 <style>
-/* .rating {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: center
+html,
+body,
+#editor {
+  margin: 0;
+  height: 100%;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  color: #333;
 }
 
-.rating>input {
-    display: none
+textarea,
+#editor div {
+  display: inline-block;
+  width: 49%;
+  height: 100%;
+  vertical-align: top;
+  box-sizing: border-box;
+  padding: 0 20px;
 }
 
-.rating>label {
-    position: relative;
-    width: 1em;
-    font-size: 30px;
-    font-weight: 300;
-    color: #FFD600;
-    cursor: pointer
+textarea {
+  border: none;
+  border-right: 1px solid #ccc;
+  resize: none;
+  outline: none;
+  background-color: #f6f6f6;
+  font-size: 14px;
+  font-family: "Monaco", courier, monospace;
+  padding: 20px;
 }
 
-.rating>label::before {
-    content: "\2605";
-    position: absolute;
-    opacity: 0
+code {
+  color: #f66;
 }
-
-.rating>label:hover:before,
-.rating>label:hover~label:before {
-    opacity: 1 !important
-}
-
-.rating>input:checked~label:before {
-    opacity: 1
-}
-
-.rating:hover>input:checked~label:before {
-    opacity: 0.4
-}
-
-
-.buttons{
-	top: 36px;
-    position: relative;
-}
-
-
-.rating-submit{
-	border-radius: 15px;
-	color: #fff;
-	    height: 49px;
-}
-
-
-.rating-submit:hover{
-	
-	color: #fff;
-} */
 </style>

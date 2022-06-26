@@ -1,11 +1,11 @@
 <template>
   <div class="card p-1 m-2" style="width: 18rem">
-    <img :src="this.course.image" class="p-3 card-img-top" />
+    <img :src="this.course.image" :img="course.name" class="p-3 card-img-top" />
     <div class="card-body">
       <h5 class="card-title">{{ course.name }}</h5>
       <div class="d-flex justify-content-between align-items-center flex-wrap">
         <i class="bi bi-star-fill">
-          {{ course.rating }}
+          {{ Number(course.rating.toFixed(1)) }}
         </i>
         <i class="bi bi-person-fill">
           {{ course.students.length }}

@@ -1,8 +1,14 @@
 <template>
-  <div class="row" v-if="!courses.length">
+  <div class="row container" v-if="!courses.length">
     <h1>Курсы отсутствуют</h1>
+    <div class="d-flex flex-wrap">
+      <slot name="buttons"></slot>
+    </div>
   </div>
-  <div class="d-flex flex-wrap" v-else>
+  <div class="row container" v-else>
+    <div class="d-flex flex-wrap">
+      <slot name="buttons"></slot>
+    </div>
     <course-item v-for="course in courses" :key="course.id" :course="course" />
   </div>
   <div ref="observer" class="observer"></div>

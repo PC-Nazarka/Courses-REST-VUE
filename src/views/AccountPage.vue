@@ -122,7 +122,7 @@
                     Архив
                   </button>
                 </li>
-                                <li>
+                <li>
                   <button
                     class="link-dark btn btn-toggle"
                     @click="
@@ -164,7 +164,16 @@
             this.is_teach_courses
           "
           :courses="this.courses"
-        ></list-courses>
+        >
+          <template v-if="this.is_teach_courses" #buttons>
+            <button
+              @click="$router.push({ name: 'CourseCreate' })"
+              class="btn btn-success"
+            >
+              Создать курс
+            </button>
+          </template>
+        </list-courses>
       </div>
     </div>
   </div>
@@ -218,6 +227,7 @@ export default {
       this.is_change_password = false;
       this.is_edit_account = false;
       this.is_delete_account = false;
+      this.is_teach_courses = false;
     },
     async fetchCourses(mode) {
       this.courses = [];
