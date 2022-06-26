@@ -1,14 +1,22 @@
 <template>
   <div>
-    <button class="btn btn-success" @click="this.createCourse">
-      <span v-if="$route.params.id">Редактировать</span
-      ><span v-else>Создать</span> курс
+    <button class="btn btn-success me-2" @click="this.createCourse">
+      <span v-if="$route.params.id">Сохранить изменения</span
+      ><span v-else>Создать курс</span>
+    </button>
+    <button
+      class="btn btn-danger"
+      v-if="$route.params.id"
+      @click="this.deleteCourse"
+    >
+      Удалить курс
     </button>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import router from "../router";
 
 export default {
   name: "FinishCourse",
@@ -17,6 +25,31 @@ export default {
     topics: Array,
   },
   methods: {
+    async deleteCourse() {
+      try {
+        delete this.course.image;
+        await this.$store.dispatch("setAccess");
+        await axios.delete(
+          this.$store.state.url + `courses/${this.$route.params.id}/`,
+          {
+            data: this.course,
+            headers: {
+              Authorization: "JWT " + this.$store.state.access,
+            },
+          }
+        );
+        await router.push({
+          name: "Account",
+          params: { id: this.$store.state.user_id },
+        });
+      } catch (e) {
+        let str = "";
+        for (let [key, value] of Object.entries(e.response.data)) {
+          str += `${key}: ${value}\n`;
+        }
+        alert(str);
+      }
+    },
     async createAnswer(id, task) {
       try {
         for (let answer of task.answers) {
@@ -200,7 +233,7 @@ export default {
           );
         }
         if (this.topics.length) await this.createTopic(response.data.id);
-        alert("Курс успешно создан");
+        alert(`Курс успешно ${this.$route.params.id ? "изменен" : "создан"}`);
         await this.$router.push({
           name: "Course",
           params: { id: response.data.id },

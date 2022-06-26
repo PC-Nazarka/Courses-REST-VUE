@@ -52,6 +52,10 @@
       <option value="DRAFT">Черновик</option>
     </select>
     <div class="mb-3">
+      <div v-if="$route.params.id && this.course.image">
+        {{ this.course.image.slice(this.course.image.lastIndexOf("/") + 1) }}
+        <br />
+      </div>
       <label for="formFile" class="form-label">Лого курса</label>
       <input
         @change="this.getFile"
