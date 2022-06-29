@@ -59,7 +59,7 @@ export default {
         );
         this.isActivate = true;
         alert("Username успешно сменен");
-        router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {

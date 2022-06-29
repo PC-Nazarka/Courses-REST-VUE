@@ -9,7 +9,9 @@
       v-model="this.email"
       placeholder="Введите email для отправки письма"
     />
-    <button @click="this.resetPassword" class="mt-3 btn btn-success">Сбросить пароль</button>
+    <button @click="this.resetPassword" class="mt-3 btn btn-success">
+      Сбросить пароль
+    </button>
   </div>
 </template>
 
@@ -29,7 +31,7 @@ export default {
         await axios.post(this.$store.state.url + "auth/users/reset_password/", {
           email: this.email,
         });
-        alert("На указанную почту отправлено сообщение со сбросом пароля")
+        alert("На указанную почту отправлено сообщение со сбросом пароля");
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {

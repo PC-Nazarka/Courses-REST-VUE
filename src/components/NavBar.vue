@@ -107,11 +107,10 @@ export default {
           }
         );
         if (response.status === 204) {
-          this.$store.commit("setAccess", "");
           this.$store.commit("setRefresh", "");
+          this.$store.commit("setAccess", "");
           this.$store.commit("setUserId", -1);
-          localStorage.clear();
-          await router.push({ name: "Main" });
+          await this.$router.push({ name: "Main" });
         }
       } catch (e) {
         let str = "";
@@ -119,7 +118,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
   },

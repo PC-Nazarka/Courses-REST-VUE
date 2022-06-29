@@ -81,7 +81,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "AccountInfo" });
+        await this.$router.push({ name: "AccountInfo" });
       }
     },
   },

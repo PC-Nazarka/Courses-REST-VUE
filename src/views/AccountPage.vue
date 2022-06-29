@@ -250,8 +250,8 @@ export default {
           break;
       }
       try {
-        await this.$store.dispatch("setAccess");
         for (let i of courses) {
+          await this.$store.dispatch("setAccess");
           const course = await axios.get(
             this.$store.state.url + `courses/${i}/`,
             {
@@ -272,6 +272,7 @@ export default {
     },
     async getUser() {
       try {
+        await this.$store.dispatch("setAccess");
         const response = await axios.get(
           this.$store.state.url + `auth/users/${this.$route.params.id}/`,
           {
@@ -287,7 +288,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     checkUser() {

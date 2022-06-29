@@ -21,7 +21,7 @@
               }"
             ></i>
           </div>
-          {{ Number(this.course.rating.toFixed(1)) }}
+          {{ this.rating }}
         </div>
       </div>
     </div>
@@ -51,20 +51,28 @@
       >
         Редактировать
       </button>
-      <div
-        v-if="!this.course.students.includes(Number(this.$store.state.user_id))"
-      >
-        <button @click="this.buyCourse" class="btn btn-success me-2">
-          Преобрести
-        </button>
-      </div>
-      <div v-else>
+      <div v-if="this.is_student">
         <button @click="this.showModalReview" class="btn btn-success me-2">
           Написать отзыв
         </button>
-        <button class="btn btn-success me-2">Продолжить обучение</button>
-        <button @click="this.buyCourse" class="btn btn-success me-2">
+        <button
+          @click="
+            $router.push({
+              name: 'CourseCompletion',
+              params: { id: $route.params.id },
+            })
+          "
+          class="btn btn-success me-2"
+        >
+          Продолжить обучение
+        </button>
+        <button @click="this.buyCourse" class="btn btn-danger me-2">
           Покинуть курс
+        </button>
+      </div>
+      <div v-else>
+        <button @click="this.buyCourse" class="btn btn-success me-2">
+          Преобрести
         </button>
       </div>
     </div>
@@ -178,15 +186,16 @@ export default {
       stars: [1, 2, 3, 4, 5],
       reviews: [],
       reviewForEdit: Object(),
+      is_student: null,
     };
   },
   methods: {
     async sendEditReview() {
       try {
         await this.$store.dispatch("setAccess");
-        let stars = document.querySelectorAll(
-          "i[name='ranting'].bi-star-fill"
-        ).length;
+        let stars =
+          document.querySelectorAll("i[name='ranting'].bi-star-fill").length /
+          2;
         const response = await axios.put(
           this.$store.state.url + `reviews/${this.reviewForEdit.id}/`,
           {
@@ -200,6 +209,8 @@ export default {
             },
           }
         );
+        alert("Review success edited");
+        location.reload();
         this.isShowModalEdit = false;
         this.reviews = [];
         await this.getReviews();
@@ -209,7 +220,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     async removeReview(review) {
@@ -230,7 +241,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     editReview(review) {
@@ -240,9 +251,9 @@ export default {
     async sendReview() {
       try {
         await this.$store.dispatch("setAccess");
-        let stars = document.querySelectorAll(
-          "i[name='ranting'].bi-star-fill"
-        ).length;
+        let stars =
+          document.querySelectorAll("i[name='ranting'].bi-star-fill").length /
+          2;
         const response = await axios.post(
           this.$store.state.url + `reviews/`,
           {
@@ -256,15 +267,15 @@ export default {
             },
           }
         );
-        this.reviews = [];
-        await this.getReviews();
+        alert("Review success created");
+        location.reload();
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     selectStar(e) {
@@ -302,7 +313,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     compareFunction(a, b) {
@@ -316,8 +327,9 @@ export default {
     },
     async getTopics() {
       try {
-        await this.$store.dispatch("setAccess");
+        let topics = [];
         for (let i of this.course.topics) {
+          await this.$store.dispatch("setAccess");
           const response = await axios.get(
             this.$store.state.url + `topics/${i}/`,
             {
@@ -326,16 +338,17 @@ export default {
               },
             }
           );
-          this.topics = [...this.topics, response.data];
+          topics.push(response.data);
         }
-        this.topics.sort(this.compareFunction);
+        topics.sort(this.compareFunction);
+        this.topics = topics;
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     async getCourse() {
@@ -350,6 +363,10 @@ export default {
           }
         );
         this.course = response.data;
+        this.rating = Number(this.course.rating.toFixed(1));
+        this.is_student =
+          this.course.students.includes(Number(this.$store.state.user_id)) ||
+          Number(this.$store.state.user_id) === Number(this.course.owner);
         await this.getTopics();
         await this.getReviews();
       } catch (e) {
@@ -358,13 +375,14 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     async getReviews() {
       try {
-        await this.$store.dispatch("setAccess");
+        let reviews = [];
         for (let i of this.course.reviews) {
+          await this.$store.dispatch("setAccess");
           const review = await axios.get(
             this.$store.state.url + `reviews/${i}/`,
             {
@@ -373,15 +391,16 @@ export default {
               },
             }
           );
-          this.reviews = [...this.reviews, review.data];
+          reviews.push(review.data);
         }
+        this.reviews = reviews;
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
   },

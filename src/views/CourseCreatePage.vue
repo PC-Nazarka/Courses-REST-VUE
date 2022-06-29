@@ -100,8 +100,8 @@ export default {
     },
     async getAnswers(task) {
       try {
-        await this.$store.dispatch("setAccess");
         for (let i in task.answers) {
+          await this.$store.dispatch("setAccess");
           const response = await axios.get(
             this.$store.state.url + `answers/${task.answers[i]}/`,
             {
@@ -118,14 +118,14 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     async getTasks() {
       try {
-        await this.$store.dispatch("setAccess");
         for (let i in this.topics) {
           for (let j in this.topics[i].tasks) {
+            await this.$store.dispatch("setAccess");
             const response = await axios.get(
               this.$store.state.url + `tasks/${this.topics[i].tasks[j]}/`,
               {
@@ -150,13 +150,13 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     async getTopics() {
       try {
-        await this.$store.dispatch("setAccess");
         for (let i in this.course.topics) {
+          await this.$store.dispatch("setAccess");
           const response = await axios.get(
             this.$store.state.url + `topics/${this.course.topics[i]}/`,
             {
@@ -175,7 +175,7 @@ export default {
           str += `${key}: ${value}\n`;
         }
         alert(str);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       }
     },
     async getCourse() {

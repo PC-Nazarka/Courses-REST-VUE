@@ -54,7 +54,7 @@ export default {
         this.$store.commit("setAccess", "");
         this.$store.commit("setRefresh", "");
         this.$store.commit("setUserId", -1);
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {

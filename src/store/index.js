@@ -26,7 +26,7 @@ const store = createStore({
   actions: {
     async setUser({ commit, state }) {
       if (state.access === "" && state.refresh === "") {
-        await router.push({ name: "Login" });
+        await this.$router.push({ name: "Login" });
         return;
       }
       try {
@@ -37,12 +37,12 @@ const store = createStore({
         });
         commit("setUserId", response.data.id);
       } catch (e) {
-        await router.push({ name: "Login" });
+        await this.$router.push({ name: "Login" });
       }
     },
     async setAccess({ commit, state, dispatch }) {
       if (state.access === "" && state.refresh === "") {
-        await router.push({ name: "Login" });
+        await this.$router.push({ name: "Login" });
         return;
       }
       try {
@@ -51,22 +51,21 @@ const store = createStore({
         });
         dispatch("setUser");
       } catch (error) {
-        if (error.response.status === 401) {
-          try {
-            const response_refresh = await axios.post(
-              state.url + "auth/jwt/refresh/",
-              {
-                refresh: state.refresh,
-              }
-            );
-            commit("setAccess", response_refresh.data.access);
-            dispatch("setAccess");
-          } catch (e) {
-            commit("setRefresh", "");
-            commit("setAccess", "");
-            commit("setUserId", -1);
-            await router.push({ name: "Main" });
-          }
+        try {
+          const response_refresh = await axios.post(
+            state.url + "auth/jwt/refresh/",
+            {
+              refresh: state.refresh,
+            }
+          );
+          commit("setAccess", response_refresh.data.access);
+          commit("setRefresh", response_refresh.data.refresh);
+          dispatch("setAccess");
+        } catch (e) {
+          commit("setRefresh", "");
+          commit("setAccess", "");
+          commit("setUserId", -1);
+          await this.$router.push({ name: "Main" });
         }
       }
     },

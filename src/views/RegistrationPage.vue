@@ -130,7 +130,7 @@ export default {
         alert(
           "Для завершения регистрации пройдите по ссылке, присланной вам на указанный email"
         );
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {
@@ -139,6 +139,9 @@ export default {
         alert(str);
       }
     },
+  },
+  created() {
+    if (this.$store.state.user_id !== -1) router.push({ name: "Main" });
   },
 };
 </script>

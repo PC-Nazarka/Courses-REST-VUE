@@ -11,9 +11,9 @@
 <script>
 export default {
   name: "AccountInfoPage",
-  props:{
+  props: {
     user: Object,
-  }
+  },
 };
 </script>
 

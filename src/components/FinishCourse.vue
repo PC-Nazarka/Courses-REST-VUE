@@ -38,7 +38,7 @@ export default {
             },
           }
         );
-        await router.push({
+        await this.$router.push({
           name: "Account",
           params: { id: this.$store.state.user_id },
         });
@@ -53,6 +53,7 @@ export default {
     async createAnswer(id, task) {
       try {
         for (let answer of task.answers) {
+          await this.$store.dispatch("setAccess");
           let response = {};
           if (answer.is_new) {
             response = await axios.post(
@@ -97,6 +98,7 @@ export default {
     async createTask(id, topic) {
       try {
         for (let task of topic.tasks) {
+          await this.$store.dispatch("setAccess");
           let response = {};
           if (task.is_new) {
             response = await axios.post(
@@ -146,8 +148,8 @@ export default {
     },
     async createTopic(id) {
       try {
-        await this.$store.dispatch("setAccess");
         for (let topic of this.topics) {
+          await this.$store.dispatch("setAccess");
           let response = {};
           if (topic.is_new) {
             response = await axios.post(

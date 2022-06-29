@@ -90,7 +90,6 @@ export default {
     getFile(e) {
       this.course.image = e.target.files[0];
     },
-
     async getCategories() {
       try {
         await this.$store.dispatch("setAccess");

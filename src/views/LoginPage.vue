@@ -66,7 +66,7 @@ export default {
         this.$store.commit("setAccess", response.data.access);
         this.$store.commit("setRefresh", response.data.refresh);
         this.$store.dispatch("setUser");
-        await router.push({ name: "Main" });
+        await this.$router.push({ name: "Main" });
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {

@@ -10,6 +10,7 @@ import ResetPasswordConfirmPage from "@/views/ResetPasswordConfirmPage.vue";
 import ResetUsernameConfirmPage from "@/views/ResetUsernameConfirmPage.vue";
 import AccountPage from "@/views/AccountPage.vue";
 import CourseCreatePage from "@/views/CourseCreatePage.vue";
+import CourseCompletionPage from "@/views/CourseCompletionPage.vue";
 import store from "../store";
 import axios from "axios";
 
@@ -50,13 +51,18 @@ const routes = [
     component: CoursePage,
   },
   {
-    path: "/course-create",
-    name: "CourseCreate",
-    component: CourseCreatePage,
+    path: "/course/:id/completion",
+    name: "CourseCompletion",
+    component: CourseCompletionPage,
   },
   {
     path: "/course-edit/:id",
     name: "CourseEdit",
+    component: CourseCreatePage,
+  },
+  {
+    path: "/course-create",
+    name: "CourseCreate",
     component: CourseCreatePage,
   },
   {
@@ -81,30 +87,15 @@ const router = createRouter({
   routes,
 });
 
-function isClear(storeState) {
-  const clearUser = storeState.user_id === -1;
-  const clearAccess = storeState.access === "";
-  const clearRefresh = storeState.refresh === "";
-  return clearUser && clearAccess && clearRefresh;
-}
-
 router.beforeEach(async (to, from, next) => {
-  if (["Login", "Registration"].includes(to.name) && !isClear(store.state)) {
-    conspole.log("In reg");
-    next({ name: "Main" });
-  }
-  if (
-    ["Registration", "Login"].includes(to.name) ||
-    (to.name === "Main" && isClear(store.state))
-  ) {
-    next();
-  }
-  try {
-    await axios.post(store.state.url + "auth/jwt/verify/", {
-      token: store.state.access,
-    });
-  } catch (e) {
-    store.dispatch("setAccess");
+  const publicPages = ["Main", "Login", "Registration"];
+  const authRequired = !publicPages.includes(to.name);
+  const loggedIn = Number(localStorage.user_id) !== -1;
+  console.log(authRequired);
+  console.log(loggedIn);
+  if (authRequired && !loggedIn) {
+    console.log("to login");
+    next({ name: "Login" });
   }
   next();
 });

@@ -9,7 +9,9 @@
       placeholder="Введите email для отправки письма"
       v-model="this.email"
     />
-    <button @click="this.resetUsername" class="mt-3 btn btn-success">Сбросить username</button>
+    <button @click="this.resetUsername" class="mt-3 btn btn-success">
+      Сбросить username
+    </button>
   </div>
 </template>
 
@@ -29,7 +31,7 @@ export default {
         await axios.post(this.$store.state.url + "auth/users/reset_username/", {
           email: this.email,
         });
-        alert("На указанную почту отправлено сообщение со сбросом username")
+        alert("На указанную почту отправлено сообщение со сбросом username");
       } catch (e) {
         let str = "";
         for (let [key, value] of Object.entries(e.response.data)) {

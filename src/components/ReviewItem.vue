@@ -79,7 +79,6 @@ export default {
   data() {
     return {
       user: "",
-      created: "",
       stars: [1, 2, 3, 4, 5],
     };
   },
